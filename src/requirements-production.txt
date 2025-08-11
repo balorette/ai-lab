@@ -1,0 +1,6 @@
+# Production requirements for Sales Agent System
+python-dotenv>=1.0.0
+sendgrid>=6.11.0
+openai>=1.0.0
+# Add your agents library requirement here
+# agents>=1.0.0
