@@ -4,6 +4,7 @@ from crewai_tools import SerperDevTool
 from pydantic import BaseModel, Field
 from typing import List
 from .tools.push_tool import PushNotificationTool
+from .tools.polygon_tool import PolygonStockTool
 from crewai.memory import LongTermMemory, ShortTermMemory, EntityMemory
 from crewai.memory.storage.rag_storage import RAGStorage
 from crewai.memory.storage.ltm_sqlite_storage import LTMSQLiteStorage
@@ -45,7 +46,7 @@ class StockPicker():
     @agent
     def financial_researcher(self) -> Agent:
         return Agent(config=self.agents_config['financial_researcher'], 
-                     tools=[SerperDevTool()])
+                     tools=[SerperDevTool(),PolygonStockTool()])
 
     @agent
     def stock_picker(self) -> Agent:
