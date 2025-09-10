@@ -80,19 +80,6 @@ HOW_MANY_SEARCHES = 3
 INSTRUCTIONS = f"You are a helpful research assistant. Given a query, come up with a set of web searches \
 to perform to best answer the query. Output {HOW_MANY_SEARCHES} terms to query for."
 
-# Use Pydantic to define the Schema of our response - this is known as "Structured Outputs"
-# With massive thanks to student Wes C. for discovering and fixing a nasty bug with this!
-
-class WebSearchItem(BaseModel):
-    reason: str = Field(description="Your reasoning for why this search is important to the query.")
-
-    query: str = Field(description="The search term to use for the web search.")
-
-
-class WebSearchPlan(BaseModel):
-    searches: list[WebSearchItem] = Field(description="A list of web searches to perform to best answer the query.")
-
-
 planner_agent = Agent(
     name="PlannerAgent",
     instructions=INSTRUCTIONS,
@@ -118,7 +105,7 @@ def send_email(subject: str, html_body: str) -> Dict[str, str]:
     to_email = To("bryan.a.lorette@gmail.com") # Change this to your email
     content = Content("text/html", html_body)
     mail = Mail(from_email, to_email, subject, content).get()
-    response = sg.client.mail.send.post(request_body=mail)
+    # response = sg.client.mail.send.post(request_body=mail)
     return {"status": "success"}
 
 INSTRUCTIONS = """You are able to send a nicely formatted HTML email based on a detailed report.
@@ -186,7 +173,7 @@ async def write_report(query: str, search_results: list[str]):
     print("Finished writing report")
     return result.final_output
 
-async def send_email(report: ReportData):
+async def agent_send_email(report: ReportData):
     """ Use the email agent to send an email with the report """
     print("Writing email...")
     result = await Runner.run(email_agent, report.markdown_report)
@@ -201,7 +188,7 @@ async def showtime():
         search_plan = await plan_searches(query)
         search_results = await perform_searches(search_plan)
         report = await write_report(query, search_results)
-        await send_email(report)  
+        await agent_send_email(report)  
         print("Hooray!")
 
 asyncio.run(showtime())
